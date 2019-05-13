@@ -1,224 +1,164 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_vidi2/home_page.dart';
-import 'package:flutter_vidi2/themes.dart';
+import 'package:path_provider/path_provider.dart';
+import "package:intl/intl.dart";
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(new ThemeSwitcherApp());
+import 'dart:async';
+import 'dart:io';
 
-class ThemeSwitcherApp extends StatefulWidget {
-  @override
-  _ThemeSwitcherAppState createState() => _ThemeSwitcherAppState();
+
+
+void main() {
+  runApp(
+    MaterialApp(
+      title: 'Reading and Writing Files',
+      home: FlutterFile(fo: FileOperation()),
+    ),
+  );
 }
 
-class _ThemeSwitcherAppState extends State<ThemeSwitcherApp> {
-  ThemeBloc _themeBloc;
+
+
+class FileOperation  {
+  Future<String> get currentDir async {
+    final dir = await getApplicationDocumentsDirectory();
+    return dir.path;
+  }
+
+  Future<File> get systemFile async {
+    final path = await currentDir;
+    return File('$path/system.txt');
+  }
+
+  Future<File> get currentFile async {
+    final path = await currentDir;
+    return File('$path/data.txt');
+  }
+
+  Future<String> readMessageFile() async {
+    try {
+      final file = await currentFile;
+      String message = await file.readAsString();
+
+      return (message);
+
+    } catch (e) {
+      return "readMessageFile: " + e.toString();
+    }
+  }
+
+  Future<String> readMessagePreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'last_message';
+      final message = prefs.getString(key) ?? "";
+
+      return (message);
+
+    } catch (e) {
+      return "readMessagePreferences: " + e.toString();
+    }
+  }
+
+  Future<String> writeMessage(String message) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'last_message';
+      prefs.setString(key, message);
+
+      final file = await currentFile;
+      file.writeAsString('$message');
+
+      return "";
+
+    } catch (e) {
+      return "writeMessage: " + e.toString();
+    }
+  }
+
+  Future<String> initSystem() async {
+    try {
+      final file = await systemFile;
+      String sysMessage = "Aplikacija je pokrenuta: " + DateFormat('dd.MM.yyyy kk:mm:ss').format(DateTime.now());
+      file.writeAsString(sysMessage);
+
+      return "";
+
+    } catch (e) {
+      return "initSystem: " + e.toString();
+    }
+  }
+
+  Future<String> readSystem() async {
+    try {
+      final file = await systemFile;
+      String sysMessage = await file.readAsString();
+
+      return (sysMessage);
+
+    } catch (e) {
+      return "readSystem: " + e.toString();
+    }
+  }
+
+}
+
+
+
+class FlutterFile extends StatefulWidget {
+  final FileOperation fo;
+  FlutterFile({Key key, @required this.fo}) : super(key: key);
+  @override
+  _FlutterFile createState() => _FlutterFile();
+}
+
+class _FlutterFile extends State<FlutterFile> {
+  String sysdata = "";
+  String data = "";
 
   @override
   void initState() {
     super.initState();
-    _themeBloc = ThemeBloc();
+    widget.fo.initSystem();
+  }
+
+  void testRW() {
+    widget.fo.writeMessage("Nova poruka je zapisana u " + DateFormat('dd.MM.yyyy kk:mm:ss').format(DateTime.now()));
+
+    //    widget.fo.readMessageFile().then((String value) {
+    widget.fo.readMessagePreferences().then((String value) {
+      setState(() {
+        data = value;
+      });
+    });
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<ThemeData>(
-      initialData: _themeBloc.initialTheme().data,
-      stream: _themeBloc.themeDataStream,
-      builder: (BuildContext context, AsyncSnapshot<ThemeData> snapshot) {
-        return MaterialApp(
-          title: 'Vidi2 Demo',
-          theme: snapshot.data,
-          home: HomePage(
-            themeBloc: _themeBloc,
+      widget.fo.readSystem().then((String value) {
+        setState(() {
+          sysdata = value;
+        });
+      });
+
+    return Scaffold(
+      appBar: AppBar(title: Text('VIDI Demo - rad s datotekama')),
+        body: Center(
+          child: Column(
+            children: <Widget>[
+              Text(sysdata),
+              Text(data),
+            ],
           ),
-        );
-      },
+        ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: testRW,
+        tooltip: 'Zapis nove poruke u datoteku',
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// https://flutter.io/docs/cookbook/forms/validation
-
-//import 'package:flutter/material.dart';
-//
-//void main() => runApp(MyApp());
-//
-//class MyApp extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    final appTitle = 'Form Validation Demo';
-//
-//    return MaterialApp(
-//      title: appTitle,
-//      home: Scaffold(
-//        appBar: AppBar(
-//          title: Text(appTitle),
-//        ),
-//        body: MyCustomForm(),
-//      ),
-//    );
-//  }
-//}
-//
-//// Create a Form Widget
-//class MyCustomForm extends StatefulWidget {
-//  @override
-//  MyCustomFormState createState() {
-//    return MyCustomFormState();
-//  }
-//}
-//
-//// Create a corresponding State class. This class will hold the data related to
-//// the form.
-//class MyCustomFormState extends State<MyCustomForm> {
-//  // Create a global key that will uniquely identify the Form widget and allow
-//  // us to validate the form
-//  //
-//  // Note: This is a GlobalKey<FormState>, not a GlobalKey<MyCustomFormState>!
-//  final _formKey = GlobalKey<FormState>();
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    // Build a Form widget using the _formKey we created above
-//    return Form(
-//      key: _formKey,
-//      child: Column(
-//        crossAxisAlignment: CrossAxisAlignment.start,
-//        children: <Widget>[
-//          TextFormField(
-//            validator: (value) {
-//              if (value.isEmpty) {
-//                return 'Please enter some text';
-//              }
-//            },
-//          ),
-//          Padding(
-//            padding: const EdgeInsets.symmetric(vertical: 16.0),
-//            child: RaisedButton(
-//              onPressed: () {
-//                // Validate will return true if the form is valid, or false if
-//                // the form is invalid.
-//                if (_formKey.currentState.validate()) {
-//                  // If the form is valid, we want to show a Snackbar
-//                  Scaffold.of(context)
-//                      .showSnackBar(SnackBar(content: Text('Processing Data')));
-//                }
-//              },
-//              child: Text('Submit'),
-//            ),
-//          ),
-//        ],
-//      ),
-//    );
-//  }
-//}
-
-
-
-
-
-
-
-////https://flutter.io/docs/cookbook/forms/retrieve-input
-//
-//
-//import 'package:flutter/material.dart';
-//
-//void main() => runApp(MyApp());
-//
-//class MyApp extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//      title: 'Retrieve Text Input',
-//      home: MyCustomForm(),
-//    );
-//  }
-//}
-//
-//// Define a Custom Form Widget
-//class MyCustomForm extends StatefulWidget {
-//  @override
-//  _MyCustomFormState createState() => _MyCustomFormState();
-//}
-//
-//// Define a corresponding State class. This class will hold the data related to
-//// our Form.
-//class _MyCustomFormState extends State<MyCustomForm> {
-//  // Create a text controller. We will use it to retrieve the current value
-//  // of the TextField!
-//  final myController = TextEditingController();
-//
-//  @override
-//  void dispose() {
-//    // Clean up the controller when the Widget is disposed
-//    myController.dispose();
-//    super.dispose();
-//  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return Scaffold(
-//      appBar: AppBar(
-//        title: Text('Retrieve Text Input'),
-//      ),
-//      body: Padding(
-//        padding: const EdgeInsets.all(16.0),
-//        child: TextField(
-//          controller: myController,
-//        ),
-//      ),
-//      floatingActionButton: FloatingActionButton(
-//        // When the user presses the button, show an alert dialog with the
-//        // text the user has typed into our text field.
-//        onPressed: () {
-//          return showDialog(
-//            context: context,
-//            builder: (context) {
-//              return AlertDialog(
-//                // Retrieve the text the user has typed in using our
-//                // TextEditingController
-//                content: Text(myController.text),
-//              );
-//            },
-//          );
-//        },
-//        tooltip: 'Show me the value!',
-//        child: Icon(Icons.text_fields),
-//      ),
-//    );
-//  }
-//}

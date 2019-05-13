@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vidi.fluttervidi2"
+    package="com.vidi.flutter_vidi5"
     android:versionCode="1"
     android:versionName="1.0.0" >
 
     <uses-sdk
         android:minSdkVersion="16"
-        android:targetSdkVersion="27" />
-
+        android:targetSdkVersion="28" />
     <!--
-         The INTERNET permission is required for development. Specifically,
-         flutter needs it to communicate with the running application
+         Flutter needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -25,10 +23,10 @@
         android:name="io.flutter.app.FlutterApplication"
         android:debuggable="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="flutter_vidi2" >
+        android:label="flutter_vidi5" >
         <activity
-            android:name="com.example.vidi.fluttervidi2.MainActivity"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
+            android:name="com.vidi.flutter_vidi5.MainActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

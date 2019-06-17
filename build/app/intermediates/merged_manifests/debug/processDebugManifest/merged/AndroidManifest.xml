@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vidi.flutter_vidi5"
+    package="com.vidi.flutter_vidi6"
     android:versionCode="1"
     android:versionName="1.0.0" >
 
@@ -23,9 +23,9 @@
         android:name="io.flutter.app.FlutterApplication"
         android:debuggable="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="flutter_vidi5" >
+        android:label="flutter_vidi6" >
         <activity
-            android:name="com.vidi.flutter_vidi5.MainActivity"
+            android:name="com.vidi.flutter_vidi6.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"

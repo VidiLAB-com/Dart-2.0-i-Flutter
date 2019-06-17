@@ -1,6 +1,6 @@
-# flutter_vidi5
+# flutter_vidi6
 
-Vidi test application
+VIDI test project
 
 ## Getting Started
 
